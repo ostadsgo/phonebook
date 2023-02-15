@@ -3,6 +3,10 @@ contacts = []
 Contact = dict[str, str]
 
 
+def make_contact(name: str, phone: str):
+    return {"name": name, "phone": phone}
+
+
 def add_contact(contact: Contact) -> int:
     try:
         contacts.append(contact)

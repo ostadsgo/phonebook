@@ -3,14 +3,10 @@ import sys
 import contact
 
 
-def make_contact(name: str, phone: str):
-    return {"name": name, "phone": phone}
-
-
 def add_contact_ui():
     name = input("Name: ")
     phone = input("Phone: ")
-    cnt = make_contact(name, phone)
+    cnt = contact.make_contact(name, phone)
     if contact.add_contact(cnt):
         print("Contact added successfully.")
     else:
@@ -25,7 +21,7 @@ def update_contact_ui():
         return
     new_name = input("New name: ")
     new_phone = input("New phone: ")
-    cnt = make_contact(new_name, new_phone)
+    cnt = contact.make_contact(new_name, new_phone)
     result = contact.update_contact(index, cnt)
     if result:
         print("Contact updated successfully")
