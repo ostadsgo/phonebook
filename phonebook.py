@@ -48,7 +48,7 @@ def search_contact_ui():
     if index == -1:
         print("Contact not found!")
     else:
-        print(contact.contacts[index])
+        print(contact.contact_list[index])
 
 
 def show_contacts_ui():
@@ -58,7 +58,8 @@ def show_contacts_ui():
 
 
 def exit_program_ui():
-    print("Exit program.")
+    contact.write_data("contacts.pickle")
+    print("Data saved successfully.\nExit program.")
     sys.exit()
 
 
@@ -89,6 +90,7 @@ def main():
         "5": show_contacts_ui,
         "6": exit_program_ui,
     }
+    contact.contact_list = contact.read_data("contacts.pickle")
     while True:
         clear_screen()
         show_menu()

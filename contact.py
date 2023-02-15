@@ -1,4 +1,6 @@
-contacts = []
+import pickle
+
+contact_list = []
 
 Contact = dict[str, str]
 
@@ -9,14 +11,14 @@ def make_contact(name: str, phone: str):
 
 def add_contact(contact: Contact) -> int:
     try:
-        contacts.append(contact)
+        contact_list.append(contact)
         return True
     except ValueError:
         return False
 
 
 def search_contact(name: str) -> int:
-    for index, contact in enumerate(contacts):
+    for index, contact in enumerate(contact_list):
         cnt_name = contact.get("name")
         if cnt_name == name:
             return index
@@ -25,7 +27,7 @@ def search_contact(name: str) -> int:
 
 def update_contact(index: int, contact: Contact) -> bool:
     try:
-        contacts[index] = contact
+        contact_list[index] = contact
         return True
     except ValueError:
         return False
@@ -33,11 +35,27 @@ def update_contact(index: int, contact: Contact) -> bool:
 
 def delete_contact(index: int) -> bool:
     try:
-        del contacts[index]
+        del contact_list[index]
         return True
     except ValueError:
         return False
 
 
 def read_contacts() -> list[Contact]:
-    return contacts
+    return contact_list
+
+
+def write_data(filename: str):
+    with open(filename, "wb") as file:
+        pickle.dump(contact_list, file)
+    return True
+
+
+def read_data(filename: str) -> list[Contact]:
+    contacts = []
+    try:
+        with open(filename, "rb") as file:
+            contacts = pickle.load(file)
+        return contacts
+    except FileNotFoundError:
+        return contacts
