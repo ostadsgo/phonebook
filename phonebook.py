@@ -1,56 +1,67 @@
 import os
 import sys
-
-contacts = []
-
-
-def make_contact(name, phone):
-    contact = {"name": name, "phone": phone}
-    return contact
+import contact
 
 
-def add_contact():
+def make_contact(name: str, phone: str):
+    return {"name": name, "phone": phone}
+
+
+def add_contact_ui():
     name = input("Name: ")
     phone = input("Phone: ")
     cnt = make_contact(name, phone)
-    contacts.append(cnt)
+    if contact.add_contact(cnt):
+        print("Contact added successfully.")
+    else:
+        print("Some problem happend!!")
 
 
-def search_contact(name):
-    for index, contact in enumerate(contacts):
-        cnt_name = contact.get("name")
-        if cnt_name == name:
-            return index
-    return -1
-
-
-def update_contact():
+def update_contact_ui():
     name = input("Name to search: ")
-    index = search_contact(name)
-    if index != 1:
-        new_name = input("New name: ")
-        new_phone = input("New phone: ")
-        cnt = {"name": new_name, "phone": new_phone}
-        contacts[index] = cnt
-        return True
-    return False
+    index = contact.search_contact(name)
+    if index == -1:
+        print("Contact not found!")
+        return
+    new_name = input("New name: ")
+    new_phone = input("New phone: ")
+    cnt = make_contact(new_name, new_phone)
+    result = contact.update_contact(index, cnt)
+    if result:
+        print("Contact updated successfully")
+    else:
+        print("Some problem happend!!")
 
 
-def delete_contact():
+def delete_contact_ui():
     name = input("Name to search: ")
-    index = search_contact(name)
-    if index != -1:
-        del contacts[index]
-        return True
-    return False
+    index = contact.search_contact(name)
+    if index == -1:
+        print("Contact not found!")
+        return
+    result = contact.delete_contact(index)
+    if result:
+        print("Contact delete successfully.")
+    else:
+        print("Some problem happend!!")
 
 
-def show_contacts():
-    for contact in contacts:
-        print(contact)
+def search_contact_ui():
+    name = input("Name to search: ")
+    index = contact.search_contact(name)
+    if index == -1:
+        print("Contact not found!")
+    else:
+        print(contact.contacts[index])
 
 
-def exit_program():
+def show_contacts_ui():
+    contacts = contact.read_contacts()
+    for cnt in contacts:
+        print(cnt)
+
+
+def exit_program_ui():
     print("Exit program.")
     sys.exit()
 
@@ -75,12 +86,12 @@ def clear_screen():
 
 def main():
     options = {
-        "1": add_contact,
-        "2": update_contact,
-        "3": delete_contact,
-        "4": search_contact,
-        "5": show_contacts,
-        "6": exit_program,
+        "1": add_contact_ui,
+        "2": update_contact_ui,
+        "3": delete_contact_ui,
+        "4": search_contact_ui,
+        "5": show_contacts_ui,
+        "6": exit_program_ui,
     }
     while True:
         clear_screen()
