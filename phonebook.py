@@ -5,7 +5,7 @@ contacts = []
 
 
 def make_contact(name, phone):
-    contact = dict(name=name, phone=phone)
+    contact = {"name": name, "phone": phone}
     return contact
 
 
@@ -24,7 +24,8 @@ def search_contact(name):
     return -1
 
 
-def update_contact(name):
+def update_contact():
+    name = input("Name to search: ")
     index = search_contact(name)
     if index != 1:
         new_name = input("New name: ")
@@ -36,7 +37,12 @@ def update_contact(name):
 
 
 def delete_contact():
-    pass
+    name = input("Name to search: ")
+    index = search_contact(name)
+    if index != -1:
+        del contacts[index]
+        return True
+    return False
 
 
 def show_contacts():
