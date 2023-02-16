@@ -22,65 +22,67 @@ def create_contact_table(conn):
         phone	text
     );
     """
-    cur = conn.cursor()
-    cur.execute(sql)
-    return True
+    try:
+        cur = conn.cursor()
+        cur.execute(sql)
+        return True
+    except SqlError:
+        return False
 
 
 def add_contact(conn, contact: Contact) -> int:
     sql = """
     INSERT INTO contact(name, phone)
-    VALUES (:name, :phone);
+    VALUES (?, ?);
+    """
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (*contact.values(),))
+        conn.commit()
+        return True
+    except SqlError:
+        return False
+
+
+def update_contact(conn, contact_id: int, contact: Contact) -> int:
+    sql = """
+    UPDATE contact
+    SET name=?, phone=?
+    WHERE id=?
+    """
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (*contact.values(), contact_id))
+        conn.commit()
+        return True
+    except SqlError:
+        return False
+
+
+def delete_contact(conn, contact_id: int):
+    sql = """
+    DELETE FROM contact
+    WHERE id=?
+    """
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (contact_id,))
+        conn.commit()
+        return True
+    except SqlError:
+        return False
+
+
+def read_contacts(conn):
+    sql = """
+    SELECT * FROM contact 
     """
     cur = conn.cursor()
-    cur.execute(sql, contact)
-    conn.commit()
-    return True
+    cur.execute(sql)
+    contacts = cur.fetchall()
+    return contacts
 
 
-# def make_contact(name: str, phone: str):
-#     return {"name": name, "phone": phone}
-
-
-# def search_contact(name: str) -> int:
-#     for index, contact in enumerate(contact_list):
-#         cnt_name = contact.get("name")
-#         if cnt_name == name:
-#             return index
-#     return -1
-
-
-# def update_contact(index: int, contact: Contact) -> bool:
-#     try:
-#         contact_list[index] = contact
-#         return True
-#     except ValueError:
-#         return False
-
-
-# def delete_contact(index: int) -> bool:
-#     try:
-#         del contact_list[index]
-#         return True
-#     except ValueError:
-#         return False
-
-
-# def read_contacts() -> list[Contact]:
-#     return contact_list
-
-
-# def write_data(filename: str):
-#     with open(filename, "wb") as file:
-#         pickle.dump(contact_list, file)
-#     return True
-
-
-# def read_data(filename: str) -> list[Contact]:
-#     contacts = []
-#     try:
-#         with open(filename, "rb") as file:
-#             contacts = pickle.load(file)
-#         return contacts
-#     except FileNotFoundError:
-#         return contacts
+if __name__ == "__main__":
+    c = create_connection("testdb.db")
+    print(read_contacts(c))
