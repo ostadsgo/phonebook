@@ -1,106 +1,61 @@
-import os
-import sys
-import contact
+import pickle
+
+contact_list = []
+
+Contact = dict[str, str]
 
 
-def add_contact_ui():
-    name = input("Name: ")
-    phone = input("Phone: ")
-    cnt = contact.make_contact(name, phone)
-    if contact.add_contact(cnt):
-        print("Contact added successfully.")
-    else:
-        print("Some problem happend!!")
+def make_contact(name: str, phone: str):
+    return {"name": name, "phone": phone}
 
 
-def update_contact_ui():
-    name = input("Name to search: ")
-    index = contact.search_contact(name)
-    if index == -1:
-        print("Contact not found!")
-        return
-    new_name = input("New name: ")
-    new_phone = input("New phone: ")
-    cnt = contact.make_contact(new_name, new_phone)
-    result = contact.update_contact(index, cnt)
-    if result:
-        print("Contact updated successfully")
-    else:
-        print("Some problem happend!!")
+def add_contact(contact: Contact) -> int:
+    try:
+        contact_list.append(contact)
+        return True
+    except ValueError:
+        return False
 
 
-def delete_contact_ui():
-    name = input("Name to search: ")
-    index = contact.search_contact(name)
-    if index == -1:
-        print("Contact not found!")
-        return
-    result = contact.delete_contact(index)
-    if result:
-        print("Contact delete successfully.")
-    else:
-        print("Some problem happend!!")
+def search_contact(name: str) -> int:
+    for index, contact in enumerate(contact_list):
+        cnt_name = contact.get("name")
+        if cnt_name == name:
+            return index
+    return -1
 
 
-def search_contact_ui():
-    name = input("Name to search: ")
-    index = contact.search_contact(name)
-    if index == -1:
-        print("Contact not found!")
-    else:
-        print(contact.contact_list[index])
+def update_contact(index: int, contact: Contact) -> bool:
+    try:
+        contact_list[index] = contact
+        return True
+    except ValueError:
+        return False
 
 
-def show_contacts_ui():
-    contacts = contact.read_contacts()
-    for cnt in contacts:
-        print(cnt)
+def delete_contact(index: int) -> bool:
+    try:
+        del contact_list[index]
+        return True
+    except ValueError:
+        return False
 
 
-def exit_program_ui():
-    contact.write_data("contacts.pickle")
-    print("Data saved successfully.\nExit program.")
-    sys.exit()
+def read_contacts() -> list[Contact]:
+    return contact_list
 
 
-def show_menu():
-    menu_items = [
-        "Add Contact",
-        "Update Contact",
-        "Delete Contact",
-        "Search Contact",
-        "Show Contacts",
-        "Exit",
-    ]
-    for index, item in enumerate(menu_items, 1):
-        print(f"[{index}] {item}")
+def write_data(filename: str):
+    with open(filename, "wb") as file:
+        pickle.dump(contact_list, file)
+    return True
 
 
-def clear_screen():
-    command = "cls" if os.name == "nt" else "clear"
-    os.system(command)
-
-
-def main():
-    options = {
-        "1": add_contact_ui,
-        "2": update_contact_ui,
-        "3": delete_contact_ui,
-        "4": search_contact_ui,
-        "5": show_contacts_ui,
-        "6": exit_program_ui,
-    }
-    contact.contact_list = contact.read_data("contacts.pickle")
-    while True:
-        clear_screen()
-        show_menu()
-        response = input("Choose from menu: ")
-        if options.get(response) is not None:
-            options[response]()
-        else:
-            print("Invalid choice!!!")
-        input("Press any key to continue ...")
-
-
-if __name__ == "__main__":
-    main()
+def read_data(filename: str) -> list[Contact]:
+    contacts = []
+    try:
+        with open(filename, "rb") as file:
+            contacts = pickle.load(file)
+        return contacts
+    except FileNotFoundError:
+        return contacts
