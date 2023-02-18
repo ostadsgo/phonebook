@@ -6,8 +6,8 @@ import phonebook
 def add_contact_ui():
     name = input("Name: ")
     phone = input("Phone: ")
-    cnt = phonebook.make_contact(name, phone)
-    if phonebook.add_contact(cnt):
+    contact = (name, phone)
+    if phonebook.add_contact(contact):
         print("Contact added successfully.")
     else:
         print("Some problem happend!!")

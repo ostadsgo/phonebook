@@ -1,7 +1,9 @@
 import sqlite3
 from sqlite3 import Error as SqlError
 
-Contact = dict[str, str]
+
+
+Contact = tuple[str, str]
 FILENAME = "phonebook.db"
 
 
@@ -15,11 +17,10 @@ def create_connection(filename: str):
 
 
 def create_contact_table(conn):
-    sql = """
-        CREATE TABLE IF NOT EXISTS contact (
-        id	integer PRIMARY KEY,
-        name	text,
-        phone	text
+    sql = """ CREATE TABLE IF NOT EXISTS contact (
+              id	integer PRIMARY KEY,
+              name	text,
+              phone	text
     );
     """
     try:
@@ -31,13 +32,12 @@ def create_contact_table(conn):
 
 
 def add_contact(conn, contact: Contact) -> int:
-    sql = """
-    INSERT INTO contact(name, phone)
-    VALUES (?, ?);
+    sql = """ INSERT INTO contact(name, phone)
+              VALUES (?, ?);
     """
     try:
         cur = conn.cursor()
-        cur.execute(sql, (*contact.values(),))
+        cur.execute(sql, contact)
         conn.commit()
         return True
     except SqlError:
@@ -45,14 +45,13 @@ def add_contact(conn, contact: Contact) -> int:
 
 
 def update_contact(conn, contact_id: int, contact: Contact) -> int:
-    sql = """
-    UPDATE contact
-    SET name=?, phone=?
-    WHERE id=?
+    sql = """ UPDATE contact
+              SET name=?, phone=?
+              WHERE id=?
     """
     try:
         cur = conn.cursor()
-        cur.execute(sql, (*contact.values(), contact_id))
+        cur.execute(sql, (*contact, contact_id))
         conn.commit()
         return True
     except SqlError:
@@ -60,9 +59,8 @@ def update_contact(conn, contact_id: int, contact: Contact) -> int:
 
 
 def delete_contact(conn, contact_id: int):
-    sql = """
-    DELETE FROM contact
-    WHERE id=?
+    sql = """ DELETE FROM contact
+              WHERE id=?
     """
     try:
         cur = conn.cursor()
@@ -74,15 +72,8 @@ def delete_contact(conn, contact_id: int):
 
 
 def read_contacts(conn):
-    sql = """
-    SELECT * FROM contact 
-    """
+    sql = "SELECT * FROM contact;"
     cur = conn.cursor()
     cur.execute(sql)
     contacts = cur.fetchall()
     return contacts
-
-
-if __name__ == "__main__":
-    c = create_connection("testdb.db")
-    print(read_contacts(c))

@@ -6,18 +6,19 @@ TEST_DB = "database_test.db"
 
 def run_tests():
     conn = phonebook.create_connection(TEST_DB)
-    contact = {"name": "Test user", "phone": "1234"}
-    new_contact = {"name": "New test user", "phone": "01234"}
+    contact = ("John Doe", "123")
+    new_cnt = ("Joe Doe", "321")
+    contact_id = 1
     if conn is not None:
         assert phonebook.create_contact_table(conn)
         print("✅ Create table passed!")
         assert phonebook.add_contact(conn, contact)
         print("✅ Add contact passed!")
-        assert phonebook.read_contacts(conn) == [(1, "Test user", "1234")]
+        assert phonebook.read_contacts(conn) == [(contact_id, *contact)]
         print("✅ Select contact passed!")
-        assert phonebook.update_contact(conn, 1, new_contact)
+        assert phonebook.update_contact(conn, contact_id, new_cnt)
         print("✅ Update contact passed!")
-        assert phonebook.delete_contact(conn, 1)
+        assert phonebook.delete_contact(conn, contact_id)
         print("✅ Delete contact passed!")
         assert phonebook.read_contacts(conn) == []
         print("✅ Select contact passed!")
