@@ -2,9 +2,7 @@ import sqlite3
 from sqlite3 import Error as SqlError
 
 
-
 Contact = tuple[str, str]
-FILENAME = "phonebook.db"
 
 
 def create_connection(filename: str):
@@ -44,6 +42,19 @@ def add_contact(conn, contact: Contact) -> int:
         return False
 
 
+def search_by_name(conn, name):
+    sql = "SELECT * FROM contact WHERE name=?;"
+    result = ()
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (name,))
+        result = cur.fetchone()
+    except SqlError:
+        result = ()
+    finally:
+        return result
+    
+    
 def update_contact(conn, contact_id: int, contact: Contact) -> int:
     sql = """ UPDATE contact
               SET name=?, phone=?

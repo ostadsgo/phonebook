@@ -1,4 +1,5 @@
 import phonebook
+import os 
 
 
 TEST_DB = "database_test.db"
@@ -14,6 +15,8 @@ def run_tests():
         print("✅ Create table passed!")
         assert phonebook.add_contact(conn, contact)
         print("✅ Add contact passed!")
+        assert phonebook.search_by_name(conn, "John Doe") == (contact_id, *contact)
+        print("✅ Search contact passed!")
         assert phonebook.read_contacts(conn) == [(contact_id, *contact)]
         print("✅ Select contact passed!")
         assert phonebook.update_contact(conn, contact_id, new_cnt)
@@ -22,6 +25,10 @@ def run_tests():
         print("✅ Delete contact passed!")
         assert phonebook.read_contacts(conn) == []
         print("✅ Select contact passed!")
+        print("All tests passed.")
+        # remove database_test.db after passing all tests.
+        os.remove(TEST_DB)
+        print("Remove test database.")
     else:
         print("❌ Connection fails")
 

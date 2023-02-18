@@ -3,63 +3,65 @@ import sys
 import phonebook
 
 
-def add_contact_ui():
+def add_contact_ui(conn):
     name = input("Name: ")
     phone = input("Phone: ")
     contact = (name, phone)
-    if phonebook.add_contact(contact):
+    if phonebook.add_contact(conn, contact):
         print("Contact added successfully.")
     else:
         print("Some problem happend!!")
 
 
-def update_contact_ui():
+def search_contact_ui(conn):
     name = input("Name to search: ")
-    index = phonebook.search_contact(name)
-    if index == -1:
+    found = phonebook.search_by_name(conn, name)
+    if not found:
+        print("Contact not found!")
+        return
+    print(found)
+
+
+def update_contact_ui(conn):
+    name = input("Name to search: ")
+    found = phonebook.search_by_name(conn, name)
+    if not found:
         print("Contact not found!")
         return
     new_name = input("New name: ")
     new_phone = input("New phone: ")
-    cnt = phonebook.make_contact(new_name, new_phone)
-    result = phonebook.update_contact(index, cnt)
+    contact = (new_name, new_phone)
+    contact_id = found[0]
+    result = phonebook.update_contact(conn, contact_id, contact)
     if result:
         print("Contact updated successfully")
     else:
         print("Some problem happend!!")
 
 
-def delete_contact_ui():
-    name = input("Name to search: ")
-    index = phonebook.search_contact(name)
-    if index == -1:
-        print("Contact not found!")
+def delete_contact_ui(conn):
+    name = input("Contact name to search: ")
+    found = phonebook.search_by_name(conn, name)
+    if not found:
+        print("Contact not found.")
         return
-    result = phonebook.delete_contact(index)
+    contact_id = found[0]
+    result = phonebook.delete_contact(conn, contact_id)
     if result:
         print("Contact delete successfully.")
     else:
         print("Some problem happend!!")
 
 
-def search_contact_ui():
-    name = input("Name to search: ")
-    index = phonebook.search_contact(name)
-    if index == -1:
-        print("Contact not found!")
-    else:
-        print(phonebook.contact_list[index])
-
-
-def show_contacts_ui():
-    contacts = phonebook.read_contacts()
+def show_contacts_ui(conn):
+    contacts = phonebook.read_contacts(conn)
     for cnt in contacts:
         print(cnt)
 
 
-def exit_program_ui():
-    phonebook.write_data("contacts.pickle")
-    print("Data saved successfully.\nExit program.")
+def exit_program_ui(conn):
+    conn.close()
+    print("Bye.")
     sys.exit()
 
 
@@ -90,13 +92,13 @@ def main():
         "5": show_contacts_ui,
         "6": exit_program_ui,
     }
-    phonebook.contact_list = phonebook.read_data("contacts.pickle")
+    conn = phonebook.create_connection("phonebook.db")
     while True:
         clear_screen()
         show_menu()
         response = input("Choose from menu: ")
         if options.get(response) is not None:
-            options[response]()
+            options[response](conn)
         else:
             print("Invalid choice!!!")
         input("Press any key to continue ...")
